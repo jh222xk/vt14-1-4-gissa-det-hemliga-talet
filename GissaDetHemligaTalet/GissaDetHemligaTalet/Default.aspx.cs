@@ -10,17 +10,24 @@ namespace GissaDetHemligaTalet
 {
     public partial class Default : System.Web.UI.Page
     {
+        private SecretNumber SecretNumber
+        {
+            get { return Session["secretnumber"] as SecretNumber; }
+            set
+            {
+                Session["secretnumber"] = value;
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            PlaceHolder1.Visible = false;
-            PlaceHolder2.Visible = false;
             Page.SetFocus(TextBoxNumber);
 
-            if (Session["secretnumber"] == null)
+            if (SecretNumber == null)
             {
                 SecretNumber newNumber = new SecretNumber();
 
-                Session["secretnumber"] = newNumber;
+                SecretNumber = newNumber;
             }
         }
 
@@ -35,9 +42,7 @@ namespace GissaDetHemligaTalet
 
                     number = Int32.Parse(TextBoxNumber.Text);
 
-                    SecretNumber newNumber = (SecretNumber)Session["secretnumber"];
-
-                    Outcome outcome = newNumber.MakeGuess(number);
+                    Outcome outcome = SecretNumber.MakeGuess(number);
 
                     if (outcome == Outcome.High)
                     {
@@ -51,13 +56,13 @@ namespace GissaDetHemligaTalet
                     }
                     else if (outcome == Outcome.Correct)
                     {
-                        text = String.Format(" <img src='Content/tick.png' /> Grattis du klarade det på {0} försök.", newNumber.Count);
+                        text = String.Format(" <img src='Content/tick.png' /> Grattis du klarade det på {0} försök.", SecretNumber.Count);
                         LabelResult.Text += text;
                         PlaceHolder2.Visible = true;
                     }
                     else if (outcome == Outcome.NoMoreGuesses)
                     {
-                        text = String.Format(" <img src='Content/cross.png' /> Du har inga gissningar kvar. Det hemliga talet var {0}", newNumber.Number);
+                        text = String.Format(" <img src='Content/cross.png' /> Du har inga gissningar kvar. Det hemliga talet var {0}", SecretNumber.Number);
                         LabelResult.Text += text;
                         PlaceHolder2.Visible = true;
                     }
@@ -67,7 +72,7 @@ namespace GissaDetHemligaTalet
                         LabelResult.Text += text;
                     }
 
-                    if (!newNumber.CanMakeGuess)
+                    if (!SecretNumber.CanMakeGuess)
                     {
                         ButtonCheckNumber.Enabled = false;
                         TextBoxNumber.Enabled = false;
@@ -76,9 +81,9 @@ namespace GissaDetHemligaTalet
                     }
 
                     // Iterate through the list of previousguesses.
-                    foreach (var item in newNumber.PreviousGuesses)
+                    foreach (var item in SecretNumber.PreviousGuesses)
                     {
-                        LabelPreviousNumbers.Text = string.Join(", ", newNumber.PreviousGuesses);
+                        LabelPreviousNumbers.Text = string.Join(", ", SecretNumber.PreviousGuesses);
                     }
 
                     PlaceHolder1.Visible = true;
@@ -93,10 +98,7 @@ namespace GissaDetHemligaTalet
 
         protected void ButtonGenerateNewNumber_Click(object sender, EventArgs e)
         {
-            // Clear the current session...
-            Session.Clear();
-
-            // ... and redirect the user to the same page.
+            SecretNumber.Initialize();
             Response.Redirect(Request.RawUrl);
         }
     }

@@ -46,7 +46,7 @@
                 HeaderText="Fel inträffade. Åtgärda felen och försök igen."
                 runat="server" />
 
-            <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+            <asp:PlaceHolder ID="PlaceHolder1" runat="server" Visible="false">
                 <p>
                     <asp:Label ID="LabelPreviousNumbers" runat="server" Text=""></asp:Label>
 
@@ -55,7 +55,7 @@
                 
             </asp:PlaceHolder>
 
-            <asp:PlaceHolder ID="PlaceHolder2" runat="server">
+            <asp:PlaceHolder ID="PlaceHolder2" runat="server" Visible="false">
                 <p>
                     <asp:Button ID="ButtonGenerateNewNumber" runat="server" Text="Slumpa nytt hemligt tal" OnClick="ButtonGenerateNewNumber_Click" />
                 </p>

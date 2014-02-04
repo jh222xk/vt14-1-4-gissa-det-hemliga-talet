@@ -18,14 +18,22 @@ namespace GissaDetHemligaTalet.Model
         private const int MaxNumberOfGuesses = 7;
 
         // Properties
-        public bool CanMakeGuess { get; private set; }
+        public bool CanMakeGuess
+        {
+            get { return Count < MaxNumberOfGuesses && !_previousGuesses.Contains(_number); }
+        }
 
-        public int Count { get; private set; }
+        public int Count
+        {
+            get { return _previousGuesses.Count(); }
+        }
 
         public int? Number
         {
             get
             {
+                // If we can make a guess, return null
+                // otherwise return the number.
                 if (CanMakeGuess)
                 {
                     return null;
@@ -35,7 +43,7 @@ namespace GissaDetHemligaTalet.Model
                     return _number;
                 }
             }
-            private set 
+            private set
             {
                 _number = (int)value;
             }
@@ -71,8 +79,6 @@ namespace GissaDetHemligaTalet.Model
             }
 
             Outcome = Outcome.Indefinite;
-
-            CanMakeGuess = true;
         }
 
         public Outcome MakeGuess(int guess)
@@ -91,35 +97,30 @@ namespace GissaDetHemligaTalet.Model
             {
                 if (PreviousGuesses.Contains(guess))
                 {
-                    CanMakeGuess = true;
                     return Outcome.PreviousGuess;
                 }
             }
 
+            // Add the guess to the list.
             _previousGuesses.Add(guess);
-            Count = PreviousGuesses.Count;
 
             if (guess == _number)
             {
-                CanMakeGuess = false;
                 return Outcome.Correct;
             }
 
             if (Count == MaxNumberOfGuesses)
             {
-                CanMakeGuess = false;
                 return Outcome.NoMoreGuesses;
             }
 
             if (guess < _number)
             {
-                CanMakeGuess = true;
                 return Outcome.Low;
             }
 
             if (guess > _number)
             {
-                CanMakeGuess = true;
                 return Outcome.High;
             }
 
